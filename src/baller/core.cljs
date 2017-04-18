@@ -47,8 +47,8 @@
 
 (defn canvas-coord-to-pixi [x y]
   (let [[height width] (get-canvas-dimensions)]
-    [(- y (/ height 2))
-     (- x (/ width 2))]))
+     (- x (/ width 2))
+    [(- y (/ height 2))]))
 
 (defn mouse-move-handler [event]
   (let [[x y] (canvas-coord-to-pixi (.-clientX event) (.-clientY event))]
