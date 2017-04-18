@@ -13,3 +13,4 @@ pom.xml.asc
 .nrepl-port
 resources/public/js/compiled/*
 .cljs_rhino_repl/*
+figwheel_server.log
