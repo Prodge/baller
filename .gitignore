@@ -1,6 +1,7 @@
 pom.xml
 pom.xml.asc
 *jar
+*.swp
 /lib/
 /classes/
 /target/
@@ -10,3 +11,5 @@ pom.xml.asc
 .lein-plugins/
 .lein-failures
 .nrepl-port
+resources/public/js/compiled/*
+.cljs_rhino_repl/*
