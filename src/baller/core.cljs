@@ -12,9 +12,10 @@
 
 (enable-console-print!)
 
-(defonce game-state (atom {:gravity 1.05}))
+(defonce game-state (atom {:gravity 0.6}))
 
 (def hit-tolerance 10)
+(def bounce-factor -15)
 
 (defn on-js-reload []
   (println "Reloading Figwheel"))
@@ -33,9 +34,10 @@
 (defn mouse-impact? [ball]
   (let [{:keys [x y]} (:mouse @game-state)
         [ball-x ball-y] (s/get-xy ball)]
-    (println x y "|" ball-x ball-y)
     (and (> (+ ball-x hit-tolerance) x)
-         (< (- ball-x hit-tolerance) x))))
+         (< (- ball-x hit-tolerance) x)
+         (> (+ ball-y hit-tolerance) y)
+         (< (- ball-y hit-tolerance) y))))
 
 (defn game-thread [ball]
   (go
@@ -43,17 +45,13 @@
            pos-y 0
            vel-x 0
            vel-y 1]
-
-      (println (mouse-impact? ball))
-
       (s/set-pos! ball pos-x pos-y)
-
       (<! (e/next-frame))
       (when (not (off-screen? ball))
         (recur (+ pos-x vel-x)
                (+ pos-y vel-y)
                vel-x
-               (* vel-y (:gravity @game-state)))))))
+               (+ (if (mouse-impact? ball) bounce-factor vel-y) (:gravity @game-state)))))))
 
 (defn canvas-coord-to-pixi [x y]
   (let [[height width] (get-canvas-dimensions)]
