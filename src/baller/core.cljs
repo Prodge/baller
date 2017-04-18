@@ -15,9 +15,11 @@
 (defonce game-state (atom {:gravity 0.6
                            :bounces 0}))
 
-(def hit-tolerance 20)
-(def bounce-factor -15)
-(def air-friction 0.98)
+(defonce hit-tolerance 30)
+(defonce bounce-factor -15)
+(defonce air-friction 0.98)
+(defonce push-factor 2)
+(defonce scale 3)
 
 (defn on-js-reload []
   (println "Reloading Figwheel"))
@@ -52,13 +54,14 @@
            pos-y 0
            vel-x 0
            vel-y 1]
-      (s/set-pos! ball pos-x pos-y)
-      (<! (e/next-frame))
-      (when (not (off-screen? ball))
-        (recur (+ pos-x vel-x)
-               (+ pos-y vel-y)
-               (* (if (mouse-impact? ball) (mouse-x-difference ball) vel-x) air-friction)
-               (+ (if (mouse-impact? ball) bounce-factor vel-y) (:gravity @game-state)))))))
+      (let [bounce (mouse-impact? ball)]
+        (s/set-pos! ball pos-x pos-y)
+        (<! (e/next-frame))
+        (when (not (off-screen? ball))
+          (recur (+ pos-x vel-x)
+                 (+ pos-y vel-y)
+                 (* (if bounce (/ (mouse-x-difference ball) push-factor) vel-x) air-friction)
+                 (+ (if bounce bounce-factor vel-y) (:gravity @game-state))))))))
 
 (defn canvas-coord-to-pixi [x y]
   (let [[height width] (get-canvas-dimensions)]
@@ -81,8 +84,6 @@
   (c/init {:layers [:bg :ball :ui]
            :background 0x1099bb
            :expand true}))
-
-(def scale 3)
 
 (defonce init-handlers
   (events/listen js/window event-type/MOUSEMOVE #(mouse-move-handler %)))
