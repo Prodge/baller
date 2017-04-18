@@ -48,6 +48,12 @@
         ball-x (s/get-x ball)]
     (- ball-x x)))
 
+(defn increment-bounces []
+  (swap! game-state assoc :bounces (inc (:bounces @game-state))))
+
+(defn reset-bounces []
+  (swap! game-state assoc :bounces 0))
+
 (defn game-thread [ball]
   (go
     (loop [pos-x 0
@@ -55,6 +61,7 @@
            vel-x 0
            vel-y 1]
       (let [bounce (mouse-impact? ball)]
+        (when bounce (increment-bounces))
         (s/set-pos! ball pos-x pos-y)
         (<! (e/next-frame))
         (when (not (off-screen? ball))
@@ -78,7 +85,7 @@
 
 (defn end-game-thread []
   (go
-    (println "Game Over")))
+    (println "Game Over." (:bounces @game-state) "bounces!")))
 
 (defonce canvas
   (c/init {:layers [:bg :ball :ui]
@@ -96,6 +103,7 @@
     (m/with-sprite canvas :bg
       [ball (s/make-sprite :ball {:mousemove mouse-move-handler})]
         (while true
+          (reset-bounces)
           (<! (titlescreen-thread))
           (<! (game-thread ball))
           (<! (end-game-thread))))))
