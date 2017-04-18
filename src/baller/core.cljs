@@ -80,7 +80,6 @@
     (m/with-sprite canvas :bg
       [ball (s/make-sprite :ball {:mousemove mouse-move-handler})]
         (while true
-          (println "in loop")
           (<! (titlescreen-thread))
           (<! (game-thread ball))
           (<! (end-game-thread))))))

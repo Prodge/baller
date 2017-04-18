@@ -1346,3 +1346,6 @@ notifying browser that file changed:  resources/public/js/compiled/out/baller/co
 [0mCompiling "resources/public/js/compiled/baller.js" from ["src"]...[0m
 [32mSuccessfully compiled "resources/public/js/compiled/baller.js" in 0.409 seconds.[0m
 notifying browser that file changed:  resources/public/js/compiled/out/baller/core.js
+[0mCompiling "resources/public/js/compiled/baller.js" from ["src"]...[0m
+[32mSuccessfully compiled "resources/public/js/compiled/baller.js" in 0.417 seconds.[0m
+notifying browser that file changed:  resources/public/js/compiled/out/baller/core.js
