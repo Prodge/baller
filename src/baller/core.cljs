@@ -12,14 +12,20 @@
 
 (enable-console-print!)
 
-(defonce game-state (atom {:gravity 0.6
-                           :bounces 0}))
+(defonce default-state {:gravity 0.6
+                        :bounces 0
+                        :bounce-protection 0
+                        :mouse {:x 9999 :y 9999}})
+
+(defonce game-state (atom default-state))
 
 (defonce hit-tolerance 30)
 (defonce bounce-factor -15)
 (defonce air-friction 0.98)
 (defonce push-factor 2)
 (defonce scale 3)
+(defonce bounce-protection 10); min number of frames between bounces
+(defonce canvas-colour 0xe7e7e7)
 
 (defn on-js-reload []
   (println "Reloading Figwheel"))
@@ -51,8 +57,16 @@
 (defn increment-bounces []
   (swap! game-state assoc :bounces (inc (:bounces @game-state))))
 
-(defn reset-bounces []
-  (swap! game-state assoc :bounces 0))
+(defn reset-state []
+  (reset! game-state default-state))
+
+(defn set-bounce-protection []
+  (swap! game-state assoc :bounce-protection bounce-protection))
+
+(defn dec-bounce-protection []
+  (let [bp (:bounce-protection @game-state)]
+    (when (pos? bp)
+      (swap! game-state assoc :bounce-protection (dec bp)))))
 
 (defn game-thread [ball]
   (go
@@ -60,8 +74,11 @@
            pos-y 0
            vel-x 0
            vel-y 1]
-      (let [bounce (mouse-impact? ball)]
-        (when bounce (increment-bounces))
+      (let [bounce (and (mouse-impact? ball) (zero? (:bounce-protection @game-state)))]
+        (if bounce
+          (do (increment-bounces)
+              (set-bounce-protection))
+          (dec-bounce-protection))
         (s/set-pos! ball pos-x pos-y)
         (<! (e/next-frame))
         (when (not (off-screen? ball))
@@ -89,7 +106,7 @@
 
 (defonce canvas
   (c/init {:layers [:bg :ball :ui]
-           :background 0x1099bb
+           :background canvas-colour
            :expand true}))
 
 (defonce init-handlers
@@ -103,7 +120,7 @@
     (m/with-sprite canvas :bg
       [ball (s/make-sprite :ball {:mousemove mouse-move-handler})]
         (while true
-          (reset-bounces)
+          (reset-state)
           (<! (titlescreen-thread))
           (<! (game-thread ball))
           (<! (end-game-thread))))))
