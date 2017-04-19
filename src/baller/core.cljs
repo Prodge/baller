@@ -1,12 +1,13 @@
 (ns baller.core
-  (:require [infinitelives.pixi.canvas :as c]
+  (:require [infinitelives.pixi.canvas :as canvas]
               [infinitelives.pixi.events :as e]
               [infinitelives.pixi.resources :as r]
               [infinitelives.pixi.texture :as t]
               [infinitelives.pixi.sprite :as s]
               [goog.events :as events]
               [goog.events.EventType :as event-type]
-              [cljs.core.async :refer [<!]])
+              [cljs.core.async :refer [<!]]
+              [baller.constants :as c])
     (:require-macros [cljs.core.async.macros :refer [go]]
                      [infinitelives.pixi.macros :as m]))
 
@@ -18,13 +19,6 @@
                         :mouse {:x 9999 :y 9999}})
 
 (defonce game-state (atom default-state))
-
-(def hit-tolerance 30)
-(def bounce-factor -15)
-(def air-friction 0.98)
-(def push-factor 2)
-(def bounce-protection 10); min number of frames between bounces
-(def canvas-colour 0xe7e7e7)
 
 (defn on-js-reload []
   (println "Reloading Figwheel"))
@@ -43,10 +37,10 @@
 (defn mouse-impact? [ball]
   (let [{:keys [x y]} (:mouse @game-state)
         [ball-x ball-y] (s/get-xy ball)]
-    (and (> (+ ball-x hit-tolerance) x)
-         (< (- ball-x hit-tolerance) x)
-         (> (+ ball-y hit-tolerance) y)
-         (< (- ball-y hit-tolerance) y))))
+    (and (> (+ ball-x c/hit-tolerance) x)
+         (< (- ball-x c/hit-tolerance) x)
+         (> (+ ball-y c/hit-tolerance) y)
+         (< (- ball-y c/hit-tolerance) y))))
 
 (defn mouse-x-difference [ball]
   (let [{:keys [x]} (:mouse @game-state)
@@ -60,7 +54,7 @@
   (reset! game-state default-state))
 
 (defn set-bounce-protection []
-  (swap! game-state assoc :bounce-protection bounce-protection))
+  (swap! game-state assoc :bounce-protection c/bounce-protection))
 
 (defn dec-bounce-protection []
   (let [bp (:bounce-protection @game-state)]
@@ -83,8 +77,8 @@
         (when (not (off-screen? ball))
           (recur (+ pos-x vel-x)
                  (+ pos-y vel-y)
-                 (* (if bounce (/ (mouse-x-difference ball) push-factor) vel-x) air-friction)
-                 (+ (if bounce bounce-factor vel-y) (:gravity @game-state))))))))
+                 (* (if bounce (/ (mouse-x-difference ball) c/push-factor) vel-x) c/air-friction)
+                 (+ (if bounce c/bounce-velocity vel-y) (:gravity @game-state))))))))
 
 (defn canvas-coord-to-pixi [x y]
   (let [[height width] (get-canvas-dimensions)]
@@ -104,8 +98,8 @@
     (println "Game Over." (:bounces @game-state) "bounces!")))
 
 (defonce canvas
-  (c/init {:layers [:bg :ball :ui]
-           :background canvas-colour
+  (canvas/init {:layers [:bg :ball :ui]
+           :background c/canvas-colour
            :expand true}))
 
 (defonce init-handlers
