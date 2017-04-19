@@ -4,21 +4,31 @@
               [infinitelives.pixi.resources :as r]
               [infinitelives.pixi.texture :as t]
               [infinitelives.pixi.sprite :as s]
+              [infinitelives.pixi.pixelfont :as pf]
               [goog.events :as events]
               [goog.events.EventType :as event-type]
               [cljs.core.async :refer [<!]]
               [baller.constants :as c])
     (:require-macros [cljs.core.async.macros :refer [go]]
-                     [infinitelives.pixi.macros :as m]))
+                     [infinitelives.pixi.macros :as m]
+                     [infinitelives.pixi.pixelfont :as pf]))
 
 (enable-console-print!)
 
 (defonce default-state {:gravity 0.6
                         :bounces 0
                         :bounce-protection 0
+                        :playing true
                         :mouse {:x 9999 :y 9999}})
 
 (defonce game-state (atom default-state))
+
+(defonce canvas
+  (canvas/init {:layers [:bg :ball :score]
+           :background c/canvas-colour
+           :expand true
+           :origins {:score :top-right}
+           }))
 
 (defn on-js-reload []
   (println "Reloading Figwheel"))
@@ -89,6 +99,26 @@
   (let [[x y] (canvas-coord-to-pixi (.-clientX event) (.-clientY event))]
     (swap! game-state assoc :mouse {:x x :y y})))
 
+(defn playing? []
+  (:playing @game-state))
+
+(defn score-thread []
+  (go
+    (while (playing?)
+      (m/with-sprite canvas :score
+        [score-text (pf/make-text :small "0"
+                                  :scale 4
+                                  :x -80 :y 20)]
+        (loop [score (:bounces @game-state)]
+          (let [new-score (:bounces @game-state)]
+            (when (not= new-score score)
+              (.removeChildren score-text)
+              (js/console.log new-score)
+              ;(pf/change-text! score-text :small (str (int new-score)))
+              )
+          (<! (e/next-frame))
+          (recur new-score)))))))
+
 (defn titlescreen-thread []
   (go
     (println "Starting Game")))
@@ -97,23 +127,35 @@
   (go
     (println "Game Over." (:bounces @game-state) "bounces!")))
 
-(defonce canvas
-  (canvas/init {:layers [:bg :ball :ui]
-           :background c/canvas-colour
-           :expand true}))
+(defn init-font []
+  (pf/pixel-font :small "img/fonts.png" [11 117] [235 169]
+                 :chars ["ABCDEFGHIJKLMNOPQRSTUVWXYZ"
+                         "abcdefghijklmnopqrstuvwxyz"
+                         "0123456789!?#`'.,-"]
+                 :kerning {"fo" -2  "ro" -1 "la" -1 }
+                 :space 5))
+
+(defn init-resources []
+  (go (<! (r/load-resources canvas :ball ["img/ball.png"
+                                          "img/fonts.png"]))))
+
+(defn init-textures []
+  (t/set-texture! :ball (r/get-texture :ball :nearest)))
 
 (defonce init-handlers
   (events/listen js/window event-type/MOUSEMOVE #(mouse-move-handler %)))
 
 (defonce main-thread
   (go
-    (<! (r/load-resources canvas :ui ["img/ball.png"]))
-    (t/set-texture! :ball (r/get-texture :ball :nearest))
+    (<! (init-resources))
+    (init-font)
+    (init-textures)
 
     (m/with-sprite canvas :bg
       [ball (s/make-sprite :ball {:mousemove mouse-move-handler})]
         (while true
           (reset-state)
+          (score-thread)
           (<! (titlescreen-thread))
           (<! (game-thread ball))
           (<! (end-game-thread))))))
