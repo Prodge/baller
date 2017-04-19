@@ -19,13 +19,12 @@
 
 (defonce game-state (atom default-state))
 
-(defonce hit-tolerance 30)
-(defonce bounce-factor -15)
-(defonce air-friction 0.98)
-(defonce push-factor 2)
-(defonce scale 3)
-(defonce bounce-protection 10); min number of frames between bounces
-(defonce canvas-colour 0xe7e7e7)
+(def hit-tolerance 30)
+(def bounce-factor -15)
+(def air-friction 0.98)
+(def push-factor 2)
+(def bounce-protection 10); min number of frames between bounces
+(def canvas-colour 0xe7e7e7)
 
 (defn on-js-reload []
   (println "Reloading Figwheel"))
