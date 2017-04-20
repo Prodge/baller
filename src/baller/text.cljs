@@ -27,7 +27,7 @@
             [_ _ text-width _] (s/get-rects text)
             slide-width (+ width (* 2 text-width))]
         (loop [f 0]
-          (let [pos (- 0 (Math.pow speed (- 10 (/ f 10))))]
+          (let [pos (- 0 (Math.pow (Math/pow speed 2) (- 10 (/ f 10))))]
             (s/set-x! text pos)
             (<! (e/next-frame))
             (when (< pos -1)

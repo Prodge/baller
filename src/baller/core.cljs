@@ -1,5 +1,6 @@
 (ns baller.core
-  (:require [infinitelives.pixi.events :as e]
+  (:require [cljs.core.async :refer [timeout]]
+            [infinitelives.pixi.events :as e]
             [infinitelives.pixi.resources :as r]
             [infinitelives.pixi.texture :as t]
             [infinitelives.pixi.sprite :as s]
@@ -86,16 +87,23 @@
     (m/with-sprite canvas :ui
       [press-space (pf/make-text :small "Press Space to Start"
                                 :scale 2
+                                :visible false
                                 :y 150)
        get-ready (pf/make-text :small "Get Ready to Ball"
                                 :scale 3
+                                :visible false
                                 :y 50)
-       score-text (pf/make-text :small "Baller"
+       baller (pf/make-text :small "Baller"
                                 :scale 5)]
-      (text/swipe press-space :loop? true :loop-while #(not (is-pressed? :space)))
-      (loop [frame-num 0]
-        (<! (e/next-frame))
-        (recur (inc frame-num))))))
+      (text/swipe baller :speed 1.5 :pause 2 :loop? true :loop-while #(not (is-pressed? :space)))
+      (<! (timeout c/title-spacing))
+      (s/set-visible! get-ready true)
+      (text/swipe get-ready :pause 1 :loop? true :loop-while #(not (is-pressed? :space)))
+      (<! (timeout c/title-spacing))
+      (s/set-visible! press-space true)
+      (text/swipe press-space :speed 3 :loop? true :loop-while #(not (is-pressed? :space)))
+      (while true
+        (<! (e/next-frame))))))
 
 (defn end-game-thread []
   (go

@@ -17,3 +17,6 @@
 
 ; Background of Canvas
 (def canvas-colour 0xe7e7e7)
+
+; Number of ms between title screen text slides
+(def title-spacing 500)
