@@ -22,7 +22,7 @@
 (defn swipe [text & {:keys [speed pause loop? loop-while]
                      :or {speed 2 pause 0 loop? false loop-while #(true)}}]
   (go-while loop-while
-    (while loop?
+    (loop [_ 0]
       (let [[width _] (coord/get-window-size)
             [_ _ text-width _] (s/get-rects text)
             slide-width (+ width (* 2 text-width))]
@@ -38,4 +38,30 @@
             (s/set-x! text pos)
             (<! (e/next-frame))
             (when (< pos slide-width)
-              (recur (inc f)))))))))
+              (recur (inc f))))))
+      (when loop? (recur _)))))
+
+(defn push-in [text & {:keys [speed]
+                       :or {speed 2}}]
+  (go
+    (let [[ _ original-scale] (s/get-scale text)]
+      (loop [f 0]
+        (let [scale (Math.pow (/ f 10) speed)]
+          (s/set-scale! text scale)
+          (<! (e/next-frame))
+          (when (< scale original-scale)
+            (recur (inc f))))))))
+
+(defn push-through [text & {:keys [speed]
+                       :or {speed 2}}]
+  (go
+    (let [[ _ original-scale] (s/get-scale text)]
+      (loop [f 0]
+        (let [scale (+ original-scale (Math.pow (/ f 10) (Math.pow speed (/ f 15))))
+              alpha (/ (- (* speed 50) f) 100)]
+          (js/console.log scale alpha)
+          (s/set-scale! text scale)
+          (s/set-alpha! text alpha)
+          (<! (e/next-frame))
+          (when (> alpha 0)
+            (recur (inc f))))))))

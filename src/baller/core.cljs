@@ -73,7 +73,7 @@
     (m/with-sprite canvas :score
       [score-text (pf/make-text :small "0"
                                 :scale 4
-                                :x -80 :y 20)]
+                                :x -80 :y 30)]
       (loop [score (state/bounces?)]
         (s/set-visible! score-text (state/playing?))
         (let [new-score (state/bounces?)]
@@ -89,7 +89,7 @@
                                 :scale 2
                                 :visible false
                                 :y 150)
-       get-ready (pf/make-text :small "Get Ready to Ball"
+       get-ready (pf/make-text :small "Smack The Ball"
                                 :scale 3
                                 :visible false
                                 :y 50)
@@ -107,7 +107,23 @@
 
 (defn end-game-thread []
   (go
-    (println "Game Over." (state/bounces?) "bounces!")))
+    (m/with-sprite canvas :ui
+      [game-over (pf/make-text :small "Game Over"
+                                :scale 6
+                                :y 0)
+       score (pf/make-text :small (str "Score: " (state/bounces?))
+                                :scale 3
+                                :visible false
+                                :y 100)]
+      (text/push-in game-over)
+      (<! (timeout c/title-spacing))
+      (s/set-visible! score true)
+      (<! (text/push-in score))
+
+      (text/push-through game-over)
+      (<! (timeout c/title-spacing))
+      (<! (text/push-through score))
+      )))
 
 (defn advance-difficulty []
   (go
