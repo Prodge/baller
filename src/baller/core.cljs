@@ -6,6 +6,7 @@
             [infinitelives.pixi.sprite :as s]
             [infinitelives.pixi.pixelfont :as pf]
             [infinitelives.utils.coordinates :as coord]
+            [infinitelives.utils.events :refer [is-pressed?]]
             [goog.events :as events]
             [goog.events.EventType :as event-type]
             [cljs.core.async :refer [<!]]
@@ -46,6 +47,7 @@
 
 (defn game-thread [ball]
   (go
+    (s/set-visible! ball true)
     (loop [pos-x 0
            pos-y 0
            vel-x 0
@@ -57,12 +59,12 @@
           (state/dec-bounce-protection!))
         (s/set-pos! ball pos-x pos-y)
         (<! (e/next-frame))
-        (when (not (off-screen? ball))
+        (if (not (off-screen? ball))
           (recur (+ pos-x vel-x)
                  (+ pos-y vel-y)
                  (* (if bounce (/ (mouse-x-difference ball) c/push-factor) vel-x) c/air-friction)
-                 (+ (if bounce c/bounce-velocity vel-y) (state/gravity?))))))))
-
+                 (+ (if bounce c/bounce-velocity vel-y) (state/gravity?)))
+          (s/set-visible! ball false))))))
 
 (defn score-thread []
   (go
@@ -71,6 +73,7 @@
                                 :scale 4
                                 :x -80 :y 20)]
       (loop [score (state/bounces?)]
+        (s/set-visible! score-text (state/playing?))
         (let [new-score (state/bounces?)]
           (when (not= new-score score)
             (pf/change-text! score-text :small (str (int new-score))))
@@ -79,12 +82,17 @@
 
 (defn titlescreen-thread []
   (go
-    (println "Starting Game")))
+    (m/with-sprite canvas :ui
+      [score-text (pf/make-text :small "Press Space to start"
+                                :scale 2)]
+      (loop [frame-num 0]
+        (<! (e/next-frame))
+        (when (not (is-pressed? :space))
+          (recur (inc frame-num)))))))
 
 (defn end-game-thread []
   (go
     (println "Game Over." (state/bounces?) "bounces!")))
-
 
 (defonce main-thread
   (go
@@ -94,10 +102,12 @@
     (init/handlers)
 
     (m/with-sprite canvas :bg
-      [ball (s/make-sprite :ball)]
+      [ball (s/make-sprite :ball :alpha 0)]
         (score-thread)
         (while true
           (state/reset-state!)
           (<! (titlescreen-thread))
+          (state/set-playing! true)
           (<! (game-thread ball))
+          (state/set-playing! false)
           (<! (end-game-thread))))))

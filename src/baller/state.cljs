@@ -31,8 +31,8 @@
 (defn set-mouse-position! [[x y]]
   (swap! game-state assoc :mouse {:x x :y y}))
 
-(defn set-playing []
-  (swap! game-state assoc :playing true))
+(defn set-playing! [playing-status]
+  (swap! game-state assoc :playing playing-status))
 
 
 ; State queries

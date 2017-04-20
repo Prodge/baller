@@ -3,7 +3,7 @@
              [baller.constants :refer [canvas-colour]]))
 
 (defonce canvas
-  (canvas/init {:layers [:bg :ball :score]
+  (canvas/init {:layers [:bg :ball :ui :score]
            :background canvas-colour
            :expand true
            :origins {:score :top-right}}))
