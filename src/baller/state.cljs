@@ -26,7 +26,7 @@
       (swap! game-state assoc :bounce-protection (dec bp)))))
 
 (defn increment-bounces! []
-  (swap! game-state assoc :bounces (inc (:bounces @game-state))))
+  (swap! game-state update :bounces inc))
 
 (defn set-mouse-position! [[x y]]
   (swap! game-state assoc :mouse {:x x :y y}))
