@@ -19,26 +19,36 @@
       (<! (e/next-frame))
       (recur (inc f)))))
 
+(defn swipe-in [text & {:keys [speed]
+                     :or {speed 2}}]
+  (go
+    (loop [f 0]
+      (let [pos (- 0 (Math.pow (Math/pow speed 1.5) (- 11 (/ f 11))))]
+        (s/set-x! text pos)
+        (<! (e/next-frame))
+        (when (< pos -1)
+          (recur (inc f)))))))
+
+(defn swipe-out [text & {:keys [speed]
+                     :or {speed 2}}]
+  (go
+    (let [[width _] (coord/get-window-size)
+          [_ _ text-width _] (s/get-rects text)
+          slide-width (+ width (* 2 text-width))]
+      (loop [f 0]
+        (let [pos (Math.pow speed (/ f 20))]
+          (s/set-x! text pos)
+          (<! (e/next-frame))
+          (when (< pos slide-width)
+            (recur (inc f))))))))
+
 (defn swipe [text & {:keys [speed pause loop? loop-while]
                      :or {speed 2 pause 0 loop? false loop-while #(true)}}]
   (go-while loop-while
     (loop [_ 0]
-      (let [[width _] (coord/get-window-size)
-            [_ _ text-width _] (s/get-rects text)
-            slide-width (+ width (* 2 text-width))]
-        (loop [f 0]
-          (let [pos (- 0 (Math.pow (Math/pow speed 2) (- 10 (/ f 10))))]
-            (s/set-x! text pos)
-            (<! (e/next-frame))
-            (when (< pos -1)
-              (recur (inc f)))))
+        (<! (swipe-in text speed))
         (<! (timeout (* pause 1000)))
-        (loop [f 0]
-          (let [pos (Math.pow speed (/ f 20))]
-            (s/set-x! text pos)
-            (<! (e/next-frame))
-            (when (< pos slide-width)
-              (recur (inc f))))))
+        (<! (swipe-out text speed))
       (when loop? (recur _)))))
 
 (defn push-in [text & {:keys [speed]
