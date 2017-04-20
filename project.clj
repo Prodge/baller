@@ -10,16 +10,20 @@
                  [org.clojure/clojurescript "1.9.229"]
                  [org.clojure/core.async  "0.3.442"
                   :exclusions [org.clojure/tools.reader]]
-                 [infinitelives/infinitelives.pixi "0.1.0"]]
+                 [infinitelives/infinitelives.pixi "0.1.1-SNAPSHOT"]]
 
   :plugins [[lein-figwheel "0.5.10"]
             [lein-cljsbuild "1.1.5" :exclusions [[org.clojure/clojure]]]]
 
-  :source-paths ["src"]
+  :source-paths ["src"
+                 "checkouts/infinitelives.pixi/src"
+                 "checkouts/infinitelives.utils/src"]
 
   :cljsbuild {:builds
               [{:id "dev"
-                :source-paths ["src"]
+                :source-paths ["src"
+                               "checkouts/infinitelives.pixi/src"
+                               "checkouts/infinitelives.utils/src"]
                 :figwheel {:on-jsload "baller.core/on-js-reload"
                            :open-urls ["http://localhost:3449/index.html"]}
 
@@ -30,7 +34,9 @@
                            :source-map-timestamp true
                            :preloads [devtools.preload]}}
                {:id "min"
-                :source-paths ["src"]
+                :source-paths ["src"
+                               "checkouts/infinitelives.pixi/src"
+                               "checkouts/infinitelives.utils/src"]
                 :compiler {:output-to "resources/public/js/compiled/baller.js"
                            :main baller.core
                            :optimizations :advanced
