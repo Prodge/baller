@@ -65,3 +65,10 @@
           (when (> alpha 0)
             (recur (inc f))))))))
 
+(defn push-through [text & {:keys [speed pause]
+                       :or {speed 2 pause 0}}]
+  (go
+    (<! (push-in text speed))
+    (<! (timeout (* pause 1000)))
+    (<! (push-over text speed))))
+

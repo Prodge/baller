@@ -115,19 +115,14 @@
                                 :scale 3
                                 :visible false
                                 :y 100)]
-      (text/push-in game-over)
+      (text/push-through game-over :pause 1)
       (<! (timeout c/title-spacing))
       (s/set-visible! score true)
-      (<! (text/push-in score))
-
-      (text/push-over game-over)
-      (<! (timeout c/title-spacing))
-      (<! (text/push-over score)))))
+      (<! (text/push-through score :pause 2)))))
 
 (defn advance-difficulty []
   (go-while (state/playing?)
     (loop [gravity (state/gravity?)]
-      (println "increasing gravity" gravity)
       (state/set-gravity! gravity)
       (<! (e/next-frame))
       (recur (+ gravity c/gravity-increase)))))
