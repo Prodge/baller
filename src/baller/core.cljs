@@ -83,8 +83,14 @@
 (defn titlescreen-thread []
   (go
     (m/with-sprite canvas :ui
-      [score-text (pf/make-text :small "Press Space to start"
-                                :scale 2)]
+      [score-text (pf/make-text :small "Press Space to Start"
+                                :scale 2
+                                :y 150)
+       score-text (pf/make-text :small "Get Ready to Ball"
+                                :scale 3
+                                :y 100)
+       score-text (pf/make-text :small "Baller"
+                                :scale 5)]
       (loop [frame-num 0]
         (<! (e/next-frame))
         (when (not (is-pressed? :space))
@@ -102,7 +108,7 @@
     (init/handlers)
 
     (m/with-sprite canvas :bg
-      [ball (s/make-sprite :ball :alpha 0)]
+      [ball (s/make-sprite :ball :visible false)]
         (score-thread)
         (while true
           (state/reset-state!)
