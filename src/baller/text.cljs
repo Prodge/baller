@@ -52,16 +52,16 @@
           (when (< scale original-scale)
             (recur (inc f))))))))
 
-(defn push-through [text & {:keys [speed]
+(defn push-over [text & {:keys [speed]
                        :or {speed 2}}]
   (go
     (let [[ _ original-scale] (s/get-scale text)]
       (loop [f 0]
         (let [scale (+ original-scale (Math.pow (/ f 10) (Math.pow speed (/ f 15))))
               alpha (/ (- (* speed 50) f) 100)]
-          (js/console.log scale alpha)
           (s/set-scale! text scale)
           (s/set-alpha! text alpha)
           (<! (e/next-frame))
           (when (> alpha 0)
             (recur (inc f))))))))
+

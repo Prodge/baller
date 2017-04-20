@@ -51,7 +51,7 @@
   (go
     (s/set-visible! ball true)
     (loop [pos-x 0
-           pos-y 0
+           pos-y -200
            vel-x 0
            vel-y 1]
       (let [bounce (and (mouse-impact? ball) (zero? (state/bounce-protection?)))]
@@ -120,14 +120,17 @@
       (s/set-visible! score true)
       (<! (text/push-in score))
 
-      (text/push-through game-over)
+      (text/push-over game-over)
       (<! (timeout c/title-spacing))
-      (<! (text/push-through score))
-      )))
+      (<! (text/push-over score)))))
 
 (defn advance-difficulty []
-  (go
-    5))
+  (go-while (state/playing?)
+    (loop [gravity (state/gravity?)]
+      (println "increasing gravity" gravity)
+      (state/set-gravity! gravity)
+      (<! (e/next-frame))
+      (recur (+ gravity c/gravity-increase)))))
 
 (defonce main-thread
   (go
@@ -139,11 +142,11 @@
     (m/with-sprite canvas :bg
       [ball (s/make-sprite :ball :visible false)]
         (score-thread)
-        (advance-difficulty)
         (while true
           (state/reset-state!)
           (<! (titlescreen-thread))
           (state/set-playing! true)
+          (advance-difficulty)
           (<! (game-thread ball))
           (state/set-playing! false)
           (<! (end-game-thread))))))

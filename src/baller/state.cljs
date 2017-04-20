@@ -34,6 +34,9 @@
 (defn set-playing! [playing-status]
   (swap! game-state assoc :playing playing-status))
 
+(defn set-gravity! [gravity]
+  (swap! game-state assoc :gravity gravity))
+
 
 ; State queries
 
