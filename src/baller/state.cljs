@@ -6,7 +6,7 @@
 (defonce default-state {:gravity 0.6
                         :bounces 0
                         :bounce-protection 0
-                        :playing true
+                        :playing false
                         :mouse {:x 9999 :y 9999}})
 
 (defonce game-state (atom default-state))
@@ -31,6 +31,9 @@
 (defn set-mouse-position! [[x y]]
   (swap! game-state assoc :mouse {:x x :y y}))
 
+(defn set-playing []
+  (swap! game-state assoc :playing true))
+
 
 ; State queries
 
@@ -45,3 +48,6 @@
 
 (defn bounces? []
   (:bounces @game-state))
+
+(defn playing? []
+  (:playing @game-state))
