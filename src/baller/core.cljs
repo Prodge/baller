@@ -72,9 +72,7 @@
       (loop [score (state/bounces?)]
         (let [new-score (state/bounces?)]
           (when (not= new-score score)
-            (.removeChildren score-text)
-            (js/console.log new-score)
-            #_(pf/change-text! score-text :small (str (int new-score))))
+            (pf/change-text! score-text :small (str (int new-score))))
         (<! (e/next-frame))
         (recur new-score))))))
 
