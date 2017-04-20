@@ -1,6 +1,5 @@
 (ns baller.core
-  (:require [infinitelives.pixi.canvas :as canvas]
-            [infinitelives.pixi.events :as e]
+  (:require [infinitelives.pixi.events :as e]
             [infinitelives.pixi.resources :as r]
             [infinitelives.pixi.texture :as t]
             [infinitelives.pixi.sprite :as s]
@@ -15,9 +14,11 @@
             [baller.state :as state]
             [baller.events :as baller-events]
             [baller.utils :as utils]
+            [baller.text :as text]
             [baller.canvas :refer [canvas]])
     (:require-macros [cljs.core.async.macros :refer [go]]
                      [infinitelives.pixi.macros :as m]
+                     [baller.async :refer [go-while]]
                      [infinitelives.pixi.pixelfont :as pf]))
 
 (enable-console-print!)
@@ -81,24 +82,28 @@
         (recur new-score))))))
 
 (defn titlescreen-thread []
-  (go
+  (go-while (not (is-pressed? :space))
     (m/with-sprite canvas :ui
-      [score-text (pf/make-text :small "Press Space to Start"
+      [press-space (pf/make-text :small "Press Space to Start"
                                 :scale 2
                                 :y 150)
-       score-text (pf/make-text :small "Get Ready to Ball"
+       get-ready (pf/make-text :small "Get Ready to Ball"
                                 :scale 3
-                                :y 100)
+                                :y 50)
        score-text (pf/make-text :small "Baller"
                                 :scale 5)]
+      (text/swipe press-space :loop? true :loop-while #(not (is-pressed? :space)))
       (loop [frame-num 0]
         (<! (e/next-frame))
-        (when (not (is-pressed? :space))
-          (recur (inc frame-num)))))))
+        (recur (inc frame-num))))))
 
 (defn end-game-thread []
   (go
     (println "Game Over." (state/bounces?) "bounces!")))
+
+(defn advance-difficulty []
+  (go
+    5))
 
 (defonce main-thread
   (go
@@ -110,6 +115,7 @@
     (m/with-sprite canvas :bg
       [ball (s/make-sprite :ball :visible false)]
         (score-thread)
+        (advance-difficulty)
         (while true
           (state/reset-state!)
           (<! (titlescreen-thread))
