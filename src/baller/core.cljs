@@ -5,6 +5,7 @@
             [infinitelives.pixi.texture :as t]
             [infinitelives.pixi.sprite :as s]
             [infinitelives.pixi.pixelfont :as pf]
+            [infinitelives.utils.coordinates :as coord]
             [goog.events :as events]
             [goog.events.EventType :as event-type]
             [cljs.core.async :refer [<!]]
@@ -24,7 +25,7 @@
   (println "Reloading Figwheel"))
 
 (defn off-screen? [sprite]
-  (let [[height width] (utils/get-canvas-dimensions)
+  (let [[height width] (coord/get-window-size)
         [x y] (s/get-xy sprite)]
     (or
       (> (-> y Math/abs (* 2)) height)

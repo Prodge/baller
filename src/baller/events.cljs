@@ -1,7 +1,7 @@
 (ns baller.events
   (:require [goog.events :as events]
             [goog.events.EventType :as event-type]
-            [baller.utils :refer [origin-top-left->center]]
+            [infinitelives.utils.coordinates :refer [origin-top-left->center]]
             [baller.state :refer [set-mouse-position!]]))
 
 (defn mouse-move-handler [event]
