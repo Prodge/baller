@@ -1,4 +1,8 @@
-(ns baller.utils)
+(ns baller.utils
+  (:require [infinitelives.utils.coordinates :as coord]
+            [infinitelives.pixi.sprite :as s]
+            [baller.constants :as c]
+            [baller.state :as state]))
 
 (defn off-screen? [sprite]
   (let [[height width] (coord/get-window-size)
