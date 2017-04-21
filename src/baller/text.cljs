@@ -46,9 +46,9 @@
                      :or {speed 2 pause 0 loop? false loop-while #(true)}}]
   (go-while loop-while
     (loop [_ 0]
-        (<! (swipe-in text speed))
+        (<! (swipe-in text :speed speed))
         (<! (timeout (* pause 1000)))
-        (<! (swipe-out text speed))
+        (<! (swipe-out text :speed speed))
       (when loop? (recur _)))))
 
 (defn push-in [text & {:keys [speed]
@@ -78,7 +78,28 @@
 (defn push-through [text & {:keys [speed pause]
                        :or {speed 2 pause 0}}]
   (go
-    (<! (push-in text speed))
+    (<! (push-in text :speed speed))
     (<! (timeout (* pause 1000)))
-    (<! (push-over text speed))))
+    (<! (push-over text :speed speed))))
 
+(defn scale-to [text & {:keys [speed to-scale]
+                    :or {speed 2 to-scale 3}}]
+  (go
+    (let [[ _ original-scale] (s/get-scale text)]
+      (loop [f 0]
+        (let [operator (if (< to-scale original-scale) - +)
+              comparitor (if (< to-scale original-scale) > <)
+              scale (operator original-scale (/ (* f speed) 20))]
+          (println original-scale to-scale  (operator 1 1) (comparitor 1 2) scale)
+          (s/set-scale! text scale)
+          (<! (e/next-frame))
+          (when (comparitor scale to-scale)
+            (recur (inc f))))))))
+
+(defn bump [text & {:keys [speed increase-scale pause]
+                    :or {speed 3 increase-scale 1.5 pause 0}}]
+  (go
+    (let [[ _ original-scale] (s/get-scale text)]
+      (<! (scale-to text :speed speed :to-scale (* original-scale increase-scale)))
+      (<! (timeout (* pause 1000)))
+      (<! (scale-to text :speed speed :to-scale original-scale)))))
