@@ -27,26 +27,6 @@
 (defn on-js-reload []
   (println "Reloading Figwheel"))
 
-(defn off-screen? [sprite]
-  (let [[height width] (coord/get-window-size)
-        [x y] (s/get-xy sprite)]
-    (or
-      (> (-> y Math/abs (* 2)) height)
-      (> (-> x Math/abs (* 2)) width))))
-
-(defn mouse-impact? [ball]
-  (let [{:keys [x y]} (state/mouse-pos?)
-        [ball-x ball-y] (s/get-xy ball)]
-    (and (> (+ ball-x c/hit-tolerance) x)
-         (< (- ball-x c/hit-tolerance) x)
-         (> (+ ball-y c/hit-tolerance) y)
-         (< (- ball-y c/hit-tolerance) y))))
-
-(defn mouse-x-difference [ball]
-  (let [{:keys [x]} (state/mouse-pos?)
-        ball-x (s/get-x ball)]
-    (- ball-x x)))
-
 (defn game-thread [ball]
   (go
     (s/set-visible! ball true)
@@ -54,17 +34,17 @@
            pos-y -200
            vel-x 0
            vel-y 1]
-      (let [bounce (and (mouse-impact? ball) (zero? (state/bounce-protection?)))]
+      (let [bounce (and (utils/mouse-impact? ball) (zero? (state/bounce-protection?)))]
         (if bounce
           (do (state/increment-bounces!)
               (state/set-bounce-protection!))
           (state/dec-bounce-protection!))
         (s/set-pos! ball pos-x pos-y)
         (<! (e/next-frame))
-        (if (not (off-screen? ball))
+        (if (not (utils/off-screen? ball))
           (recur (+ pos-x vel-x)
                  (+ pos-y vel-y)
-                 (* (if bounce (/ (mouse-x-difference ball) c/push-factor) vel-x) c/air-friction)
+                 (* (if bounce (/ (utils/mouse-x-difference ball) c/push-factor) vel-x) c/air-friction)
                  (+ (if bounce c/bounce-velocity vel-y) (state/gravity?)))
           (s/set-visible! ball false))))))
 
