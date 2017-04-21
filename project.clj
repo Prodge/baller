@@ -38,12 +38,12 @@
                 :source-paths ["src"
                                "checkouts/infinitelives.pixi/src"
                                "checkouts/infinitelives.utils/src"]
-                :compiler {:output-to "resources/public/js/compiled/baller.js"
+                :compiler {:output-to "build/js/compiled/baller.js"
                            :main baller.core
-                           :optimizations :advanced
+                           :optimizations :simple
                            :pretty-print false}}]}
 
-  :figwheel {:css-dirs ["resources/public/css"] ;; watch and update CSS
+  :figwheel {:css-dirs ["resources/public/css"]
               :server-logfile false}
 
 
