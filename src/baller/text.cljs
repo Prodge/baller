@@ -90,7 +90,6 @@
         (let [operator (if (< to-scale original-scale) - +)
               comparitor (if (< to-scale original-scale) > <)
               scale (operator original-scale (/ (* f speed) 20))]
-          (println original-scale to-scale  (operator 1 1) (comparitor 1 2) scale)
           (s/set-scale! text scale)
           (<! (e/next-frame))
           (when (comparitor scale to-scale)
