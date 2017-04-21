@@ -4,13 +4,56 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link href="css/style.css" rel="stylesheet" type="text/css">
-    <link rel="icon" href="https://clojurescript.org/images/cljs-logo-icon-32.png">
+    <style>
+      .infinitelives-spinner {
+        width: 112px;
+        height: 96px;
+        background-size: 112px 96px;
+        margin-left: auto;
+        margin-right: auto;
+        animation: infinitelives-heartbeat 1s cubic-bezier(0.65, -0.04, 0.48, 0.83) 0s infinite normal none running;
+        background-image: url('/img/IL-heart.png');
+      }
+      @-webkit-keyframes infinitelives-heartbeat {
+        0% { opacity: 0.7;
+             transform: scale(1) rotate3d(1,0,0,20deg);}
+        5% { opacity: 1;
+             transform: scale(1.2)  translateX(5px) rotateX(10deg)  rotateZ(5deg) rotate3d(1,0,0,10deg);}
+        25% { opacity: 0.7;
+              transform: scale(1)  rotate3d(1,0,0,20deg);}
+        32% { opacity: 1;
+              transform: scale(1.2) translateX(-5px) rotateX(-10deg)  rotateZ(-5deg)  rotate3d(1,0,0,0deg);}
+        100% { opacity: 0.5;
+               transform: scale(0.95) rotate3d(5,1,0,20deg);}
+      }
+      @keyframes infinitelives-heartbeat {
+        0% { opacity: 0.7;
+             transform: scale(1) rotate3d(1,0,0,20deg);}
+        5% { opacity: 1;
+             transform: scale(1.2)  translateX(5px) rotateX(10deg)  rotateZ(5deg) rotate3d(1,0,0,10deg);}
+        25% { opacity: 0.7;
+              transform: scale(1)  rotate3d(1,0,0,20deg);}
+        32% { opacity: 1;
+              transform: scale(1.2) translateX(-5px) rotateX(-10deg)  rotateZ(-5deg)  rotate3d(1,0,0,0deg);}
+        100% { opacity: 0.5;
+               transform: scale(0.95) rotate3d(5,1,0,20deg);}
+      }
+      /* this is optional */
+      .infinitelives-spinner-vertical-center {
+        position: absolute;
+        left: 50%;
+        top: 50%;
+        margin-left: -56px;
+        margin-top: -48px;
+      }
+      html, body {
+        margin: 0px;
+        height: 100%;
+      }
+    </style>
   </head>
   <body>
-    <div id="app">
-      <h2>Figwheel template</h2>
-      <p>Checkout your developer console.</p>
-    </div>
-    <script src="js/compiled/baller.js" type="text/javascript"></script>
+  <div id="app"><div class='infinitelives-spinner infinitelives-spinner-vertical-center'></div></div>
+  <script src="js/compiled/baller.js" type="text/javascript"></script>
   </body>
 </html>
