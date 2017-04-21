@@ -99,7 +99,7 @@
       (text/push-through game-over :pause 1)
       (<! (timeout c/title-spacing))
       (s/set-visible! score true)
-      (<! (text/push-through score :pause 2)))))
+      (<! (text/push-through score :speed 3 :pause 2)))))
 
 (defn advance-difficulty []
   (go-while (state/playing?)
