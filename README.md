@@ -5,7 +5,7 @@ A 2D baller ball bouncing game written in [ClojureScript](https://github.com/clo
 [PLAY NOW!](https://prodge.github.io/baller/)
 
 ![Menu Screen](https://github.com/Prodge/baller/blob/master/screenshot.png?raw=true "Menu Screen")
-![Playing Screen](https://github.com/Prodge/baller/blob/master/screenshot2.png?raw=true) "Playing Screen")
+![Playing Screen](https://github.com/Prodge/baller/blob/master/screenshot2.png?raw=true "Playing Screen")
 
 ## Setup
 
