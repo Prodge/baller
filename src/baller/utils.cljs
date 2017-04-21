@@ -5,7 +5,7 @@
             [baller.state :as state]))
 
 (defn off-screen? [sprite]
-  (let [[height width] (coord/get-window-size)
+  (let [[width height] (coord/get-window-size)
         [x y] (s/get-xy sprite)]
     (or
       (> (-> y Math/abs (* 2)) height)
