@@ -53,12 +53,13 @@
     (m/with-sprite canvas :score
       [score-text (pf/make-text :small "0"
                                 :scale 4
-                                :x -80 :y 30)]
+                                :x -80 :y 40)]
       (loop [score (state/bounces?)]
         (s/set-visible! score-text (state/playing?))
         (let [new-score (state/bounces?)]
           (when (not= new-score score)
-            (pf/change-text! score-text :small (str (int new-score))))
+            (pf/change-text! score-text :small (str (int new-score)))
+            (text/bump score-text :speed 5))
         (<! (e/next-frame))
         (recur new-score))))))
 
