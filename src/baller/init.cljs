@@ -5,7 +5,7 @@
             [cljs.core.async :refer [<!]]
             [goog.events :as events]
             [goog.events.EventType :as event-type]
-            [baller.events :refer [mouse-listener]]
+            [baller.events :as e]
             [baller.canvas :refer [canvas]])
     (:require-macros [cljs.core.async.macros :refer [go]]
                      [infinitelives.pixi.pixelfont :as pf]))
@@ -27,4 +27,7 @@
   (t/set-texture! :ball (r/get-texture :ball :nearest)))
 
 (defn handlers []
-  (mouse-listener))
+  (e/mouse-listener)
+  (e/touch-listener)
+  (e/touch-start-listener)
+  (e/touch-end-listener))

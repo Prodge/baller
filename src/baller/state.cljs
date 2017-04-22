@@ -7,6 +7,7 @@
                         :bounces 0
                         :bounce-protection 0
                         :playing false
+                        :touch-status false
                         :mouse {:x 9999 :y 9999}})
 
 (defonce game-state (atom default-state))
@@ -37,6 +38,9 @@
 (defn set-gravity! [gravity]
   (swap! game-state assoc :gravity gravity))
 
+(defn set-touch-status! [status]
+  (swap! game-state assoc :touch-status status))
+
 
 ; State queries
 
@@ -54,3 +58,6 @@
 
 (defn playing? []
   (:playing @game-state))
+
+(defn touching? []
+  (:touch-status @game-state))

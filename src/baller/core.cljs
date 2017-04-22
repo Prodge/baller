@@ -64,9 +64,9 @@
         (recur new-score))))))
 
 (defn titlescreen-thread []
-  (go-while (not (is-pressed? :space))
+  (go-while (and (not (is-pressed? :space)) (not (state/touching?)))
     (m/with-sprite canvas :ui
-      [press-space (pf/make-text :small "Press Space to Start"
+      [press-space (pf/make-text :small "Press Space or Touch to Start"
                                 :scale 2
                                 :visible false
                                 :y 150)
