@@ -2,6 +2,8 @@
 
 A 2D baller ball bouncing game written in [ClojureScript](https://github.com/clojure/clojurescript) using the [InfiniteLives](https://github.com/infinitelives) library for [Lisp Game Jam 2017](https://itch.io/jam/lisp-game-jam-2017-easy-mode)
 
+Supports Touch!
+
 [PLAY NOW!](https://prodge.github.io/baller/)
 
 ![Menu Screen](https://github.com/Prodge/baller/blob/master/screenshot.png?raw=true "Menu Screen")
